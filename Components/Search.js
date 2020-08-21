@@ -21,7 +21,6 @@ const Search = (props) => {
 		if (searchedText.length > 0) {
 			setIsLoading(true);
 			getMoviesFromApiWithSearchedText(searchedText, page + 1).then((data) => {
-				console.log(data.total_pages);
 				setPage(data.page);
 				setTotalPages(data.total_pages);
 				setMovies([...movies, ...data.results]);
@@ -29,8 +28,6 @@ const Search = (props) => {
 			});
 		}
 	};
-
-	console.log(props);
 
 	const displayMovieDetails = (movieId) => {
 		props.navigation.navigate("MovieDetails", { movieId: movieId });

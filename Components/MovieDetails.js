@@ -1,15 +1,36 @@
 import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import { getImgFromApi, getMovieDetailsFromApi } from "../api/TMDBApi";
+import { useDispatch, useSelector } from "react-redux";
+
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 const MovieDetails = (props) => {
 	const [movie, setMovie] = useState(undefined);
 	const [isLoading, setIsLoading] = useState(true);
+	const dispatch = useDispatch();
+
+	const favMovies = useSelector((state) => state.favoritesMovie);
+
+	const toggleFavorite = () => {
+		dispatch({ type: "TOGGLE_FAVORITE", value: movie });
+	};
+
+	const displayFavImage = () => {
+		let source = require("../Images/ic_favorite_border.png");
+		if (favMovies.findIndex((item) => item.id === movie.id) !== -1) {
+			source = require("../Images/ic_favorite.png");
+		}
+		return source;
+	};
+
+	useEffect(() => {
+		console.log(favMovies);
+	}, [favMovies]);
 
 	useEffect(() => {
 		getMovieDetailsFromApi(props.navigation.state.params.movieId).then((data) => {
 			setMovie(data);
-			console.log(data);
 			setIsLoading(false);
 		});
 	}, [props.navigation.state.params.movieId]);
@@ -28,6 +49,12 @@ const MovieDetails = (props) => {
 							source={{ uri: getImgFromApi(movie.backdrop_path) }}
 						/>
 						<Text style={styles.title}>{movie.title}</Text>
+						<TouchableOpacity
+							style={styles.favContainer}
+							onPress={() => toggleFavorite()}
+						>
+							<Image style={styles.favImage} source={displayFavImage()} />
+						</TouchableOpacity>
 						<Text style={styles.description}>{movie.overview}</Text>
 						<Text style={styles.otherTexts}>Released on {movie.release_date}</Text>
 						<Text style={styles.otherTexts}>Note: {movie.vote_average}/10</Text>
@@ -98,6 +125,13 @@ const styles = StyleSheet.create({
 		marginRight: 8,
 		marginTop: 5,
 		fontWeight: "700",
+	},
+	favContainer: {
+		alignItems: "center",
+	},
+	favImage: {
+		width: 40,
+		height: 40,
 	},
 });
 

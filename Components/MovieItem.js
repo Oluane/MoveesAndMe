@@ -3,7 +3,9 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 import { getImgFromApi } from "../api/TMDBApi";
 
-const MovieItem = ({ movie, displayMovieDetails }) => {
+const FavImage = require("../Images/ic_favorite.png");
+
+const MovieItem = ({ movie, displayMovieDetails, isFavorite }) => {
 	return (
 		<TouchableOpacity
 			style={styles.mainContainer}
@@ -12,7 +14,15 @@ const MovieItem = ({ movie, displayMovieDetails }) => {
 			<Image style={styles.image} source={{ uri: getImgFromApi(movie.poster_path) }} />
 			<View style={styles.subContainer}>
 				<View style={styles.header}>
-					<Text style={styles.titleText}>{movie.title}</Text>
+					{isFavorite && (
+						<Image
+							style={styles.imgFav}
+							source={require("../Images/ic_favorite.png")}
+						/>
+					)}
+					<Text style={styles.titleText} numberOfLines={2}>
+						{movie.title}
+					</Text>
 					<Text style={styles.voteText}>{movie.vote_average}</Text>
 				</View>
 				<View style={styles.descriptionContainer}>
@@ -40,6 +50,7 @@ const styles = StyleSheet.create({
 	header: {
 		flex: 3,
 		flexDirection: "row",
+		alignItems: "center",
 	},
 	image: {
 		width: 120,
@@ -72,6 +83,11 @@ const styles = StyleSheet.create({
 	date: {
 		textAlign: "right",
 		fontSize: 14,
+	},
+	imgFav: {
+		width: 20,
+		height: 20,
+		marginRight: 5,
 	},
 });
 

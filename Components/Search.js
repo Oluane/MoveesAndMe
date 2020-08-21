@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 
 import MovieItem from "./MovieItem";
 import { getMoviesFromApiWithSearchedText } from "../api/TMDBApi";
+import { useSelector } from "react-redux";
 
 const Search = (props) => {
 	const [movies, setMovies] = useState([]);
@@ -16,6 +17,8 @@ const Search = (props) => {
 			loadMovies();
 		}
 	}, [page, movies, totalPages]);
+
+	const favMovies = useSelector((state) => state.favoritesMovie);
 
 	const loadMovies = () => {
 		if (searchedText.length > 0) {
@@ -58,9 +61,19 @@ const Search = (props) => {
 			<FlatList
 				data={movies}
 				keyExtractor={(item, idx) => idx.toString()}
-				renderItem={({ item }) => (
-					<MovieItem movie={item} displayMovieDetails={displayMovieDetails} />
-				)}
+				renderItem={({ item }) => {
+					let isFavorite = false;
+					if (favMovies.findIndex((movie) => movie.id === item.id) !== -1) {
+						isFavorite = true;
+					}
+					return (
+						<MovieItem
+							movie={item}
+							displayMovieDetails={displayMovieDetails}
+							isFavorite={isFavorite}
+						/>
+					);
+				}}
 				onEndReachedThreshold={0.5}
 				onEndReached={() => {
 					if (page < totalPages) {

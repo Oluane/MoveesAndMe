@@ -24,9 +24,9 @@ const MovieDetails = (props) => {
 		return source;
 	};
 
-	useEffect(() => {
-		console.log(favMovies);
-	}, [favMovies]);
+	// useEffect(() => {
+	// 	console.log(favMovies);
+	// }, [favMovies]);
 
 	useEffect(() => {
 		getMovieDetailsFromApi(props.navigation.state.params.movieId).then((data) => {

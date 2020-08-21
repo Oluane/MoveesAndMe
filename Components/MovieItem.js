@@ -1,11 +1,14 @@
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import React from "react";
 import { getImgFromApi } from "../api/TMDBApi";
 
-const MovieItem = ({ movie }) => {
+const MovieItem = ({ movie, displayMovieDetails }) => {
 	return (
-		<View style={styles.mainContainer}>
+		<TouchableOpacity
+			style={styles.mainContainer}
+			onPress={() => displayMovieDetails(movie.id)}
+		>
 			<Image style={styles.image} source={{ uri: getImgFromApi(movie.poster_path) }} />
 			<View style={styles.subContainer}>
 				<View style={styles.header}>
@@ -21,7 +24,7 @@ const MovieItem = ({ movie }) => {
 					<Text style={styles.date}>Sorti le {movie.release_date}</Text>
 				</View>
 			</View>
-		</View>
+		</TouchableOpacity>
 	);
 };
 

@@ -4,14 +4,12 @@ import React, { useEffect, useState } from "react";
 import MovieItem from "./MovieItem";
 import { getMoviesFromApiWithSearchedText } from "../api/TMDBApi";
 
-const Search = () => {
+const Search = (props) => {
 	const [movies, setMovies] = useState([]);
 	const [searchedText, setSearchedText] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
 	const [page, setPage] = useState(0);
 	const [totalPages, setTotalPages] = useState(0);
-
-	const searchMovies = () => {};
 
 	useEffect(() => {
 		if (page === 0 && movies.length === 0 && totalPages === 0) {
@@ -30,6 +28,12 @@ const Search = () => {
 				setIsLoading(false);
 			});
 		}
+	};
+
+	console.log(props);
+
+	const displayMovieDetails = (movieId) => {
+		props.navigation.navigate("MovieDetails", { movieId: movieId });
 	};
 
 	return (
@@ -57,7 +61,9 @@ const Search = () => {
 			<FlatList
 				data={movies}
 				keyExtractor={(item, idx) => idx.toString()}
-				renderItem={({ item }) => <MovieItem movie={item} />}
+				renderItem={({ item }) => (
+					<MovieItem movie={item} displayMovieDetails={displayMovieDetails} />
+				)}
 				onEndReachedThreshold={0.5}
 				onEndReached={() => {
 					if (page < totalPages) {
@@ -75,15 +81,11 @@ const Search = () => {
 };
 
 const styles = StyleSheet.create({
-	mainContainer: {
-		flex: 1,
-		marginTop: 20,
-	},
 	textInput: {
 		marginLeft: 5,
 		marginRight: 5,
 		height: 50,
-		borderColor: "#000",
+		borderColor: "#777",
 		borderWidth: 1,
 		paddingLeft: 5,
 	},

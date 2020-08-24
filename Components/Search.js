@@ -2,6 +2,7 @@ import { ActivityIndicator, Button, FlatList, StyleSheet, TextInput, View } from
 import React, { useEffect, useState } from "react";
 
 import MovieItem from "./MovieItem";
+import MoviesList from "./MoviesList";
 import { getMoviesFromApiWithSearchedText } from "../api/TMDBApi";
 import { useSelector } from "react-redux";
 
@@ -18,11 +19,11 @@ const Search = (props) => {
 		}
 	}, [page, movies, totalPages]);
 
-	const favMovies = useSelector((state) => state.favoritesMovie);
-
 	const loadMovies = () => {
+		console.log("toto");
 		if (searchedText.length > 0) {
 			setIsLoading(true);
+			console.log("tata");
 			getMoviesFromApiWithSearchedText(searchedText, page + 1).then((data) => {
 				setPage(data.page);
 				setTotalPages(data.total_pages);
@@ -33,7 +34,7 @@ const Search = (props) => {
 	};
 
 	const displayMovieDetails = (movieId) => {
-		props.navigation.navigate("MovieDetails", { movieId: movieId });
+		navigation.navigate("MovieDetails", { movieId: movieId });
 	};
 
 	return (
@@ -51,14 +52,22 @@ const Search = (props) => {
 			/>
 			<Button
 				color={"crimson"}
-				title="Rechercher"
+				title="Search"
 				onPress={() => {
 					setPage(0);
 					setMovies([]);
 					setTotalPages(0);
 				}}
 			/>
-			<FlatList
+			<MoviesList
+				movies={movies}
+				navigation={props.navigation}
+				page={page}
+				totalPages={totalPages}
+				loadMovies={loadMovies}
+				favoriteList={false}
+			/>
+			{/* <FlatList
 				data={movies}
 				keyExtractor={(item, idx) => idx.toString()}
 				renderItem={({ item }) => {
@@ -80,7 +89,7 @@ const Search = (props) => {
 						loadMovies();
 					}
 				}}
-			/>
+			/> */}
 			{isLoading && (
 				<View style={styles.loadingContainer}>
 					<ActivityIndicator size="large" />
@@ -103,7 +112,7 @@ const styles = StyleSheet.create({
 		position: "absolute",
 		left: 0,
 		right: 0,
-		top: 100,
+		top: 150,
 		bottom: 0,
 		alignItems: "center",
 		justifyContent: "center",

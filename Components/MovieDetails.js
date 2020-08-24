@@ -7,7 +7,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 
 const MovieDetails = (props) => {
 	const [movie, setMovie] = useState(undefined);
-	const [isLoading, setIsLoading] = useState(true);
+	const [isLoading, setIsLoading] = useState(false);
 	const dispatch = useDispatch();
 
 	const favMovies = useSelector((state) => state.favoritesMovie);
@@ -29,10 +29,19 @@ const MovieDetails = (props) => {
 	// }, [favMovies]);
 
 	useEffect(() => {
-		getMovieDetailsFromApi(props.navigation.state.params.movieId).then((data) => {
-			setMovie(data);
-			setIsLoading(false);
-		});
+		const favMovieIdx = favMovies.findIndex(
+			(item) => item.id === props.navigation.state.params.movieId
+		);
+
+		if (favMovieIdx !== -1) {
+			setMovie(favMovies[favMovieIdx]);
+		} else {
+			setIsLoading(true);
+			getMovieDetailsFromApi(props.navigation.state.params.movieId).then((data) => {
+				setMovie(data);
+				setIsLoading(false);
+			});
+		}
 	}, [props.navigation.state.params.movieId]);
 
 	return (

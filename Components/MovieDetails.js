@@ -1,4 +1,13 @@
-import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+	ActivityIndicator,
+	Image,
+	Platform,
+	ScrollView,
+	Share,
+	StyleSheet,
+	Text,
+	View,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import { getImgFromApi, getMovieDetailsFromApi } from "../api/TMDBApi";
 import { useDispatch, useSelector } from "react-redux";
@@ -24,9 +33,9 @@ const MovieDetails = (props) => {
 		return source;
 	};
 
-	// useEffect(() => {
-	// 	console.log(favMovies);
-	// }, [favMovies]);
+	const shareMovies = () => {
+		Share.share({ title: movie.title, message: movie.overview });
+	};
 
 	useEffect(() => {
 		const favMovieIdx = favMovies.findIndex(
@@ -52,40 +61,55 @@ const MovieDetails = (props) => {
 				</View>
 			) : (
 				movie !== undefined && (
-					<ScrollView style={styles.scrollContainer}>
-						<Image
-							style={styles.image}
-							source={{ uri: getImgFromApi(movie.backdrop_path) }}
-						/>
-						<Text style={styles.title}>{movie.title}</Text>
-						<TouchableOpacity
-							style={styles.favContainer}
-							onPress={() => toggleFavorite()}
-						>
-							<Image style={styles.favImage} source={displayFavImage()} />
-						</TouchableOpacity>
-						<Text style={styles.description}>{movie.overview}</Text>
-						<Text style={styles.otherTexts}>Released on {movie.release_date}</Text>
-						<Text style={styles.otherTexts}>Note: {movie.vote_average}/10</Text>
-						<Text style={styles.otherTexts}>Votes count : {movie.vote_count}</Text>
-						<Text style={styles.otherTexts}>Budget: {movie.budget}$</Text>
-						<Text style={styles.otherTexts}>
-							Genres:{" "}
-							{movie.genres
-								.map((genre) => {
-									return genre.name;
-								})
-								.join("/")}
-						</Text>
-						<Text style={styles.otherTexts}>
-							Companies:{" "}
-							{movie.production_companies
-								.map((company) => {
-									return company.name;
-								})
-								.join("/")}
-						</Text>
-					</ScrollView>
+					<>
+						<ScrollView style={styles.scrollContainer}>
+							<Image
+								style={styles.image}
+								source={{ uri: getImgFromApi(movie.backdrop_path) }}
+							/>
+							<Text style={styles.title}>{movie.title}</Text>
+							<TouchableOpacity
+								style={styles.favContainer}
+								onPress={() => toggleFavorite()}
+							>
+								<Image style={styles.favImage} source={displayFavImage()} />
+							</TouchableOpacity>
+							<Text style={styles.description}>{movie.overview}</Text>
+							<Text style={styles.otherTexts}>Released on {movie.release_date}</Text>
+							<Text style={styles.otherTexts}>Note: {movie.vote_average}/10</Text>
+							<Text style={styles.otherTexts}>Votes count : {movie.vote_count}</Text>
+							<Text style={styles.otherTexts}>Budget: {movie.budget}$</Text>
+							<Text style={styles.otherTexts}>
+								Genres:{" "}
+								{movie.genres
+									.map((genre) => {
+										return genre.name;
+									})
+									.join("/")}
+							</Text>
+							<Text style={styles.otherTexts}>
+								Companies:{" "}
+								{movie.production_companies
+									.map((company) => {
+										return company.name;
+									})
+									.join("/")}
+							</Text>
+						</ScrollView>
+						{Platform.OS === "android" && (
+							<View style={styles.shareTouchableFloatingActionView}>
+								<TouchableOpacity
+									//style={styles.}
+									onPress={() => shareMovies()}
+								>
+									<Image
+										style={styles.shareImage}
+										source={require("../Images/ic_share.png")}
+									/>
+								</TouchableOpacity>
+							</View>
+						)}
+					</>
 				)
 			)}
 		</View>
@@ -95,6 +119,7 @@ const MovieDetails = (props) => {
 const styles = StyleSheet.create({
 	mainContainer: {
 		flex: 1,
+		position: "relative",
 	},
 	loadingContainer: {
 		position: "absolute",
@@ -141,6 +166,22 @@ const styles = StyleSheet.create({
 	favImage: {
 		width: 40,
 		height: 40,
+	},
+	shareTouchableFloatingActionView: {
+		position: "absolute",
+		width: 50,
+		height: 50,
+		right: 30,
+		bottom: 30,
+		borderRadius: 30,
+		backgroundColor: "#e91e63",
+		justifyContent: "center",
+		alignItems: "center",
+		//zIndex: 1,
+	},
+	shareImage: {
+		width: 25,
+		height: 25,
 	},
 });
 

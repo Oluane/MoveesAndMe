@@ -12,6 +12,7 @@ import React, { useEffect, useState } from "react";
 import { getImgFromApi, getMovieDetailsFromApi } from "../api/TMDBApi";
 import { useDispatch, useSelector } from "react-redux";
 
+import EnlargeShrink from "../Animations/EnlargeShrink";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 const MovieDetails = (props) => {
@@ -27,10 +28,16 @@ const MovieDetails = (props) => {
 
 	const displayFavImage = () => {
 		let source = require("../Images/ic_favorite_border.png");
+		let shouldEnlarge = false;
 		if (favMovies.findIndex((item) => item.id === movie.id) !== -1) {
 			source = require("../Images/ic_favorite.png");
+			shouldEnlarge = true;
 		}
-		return source;
+		return (
+			<EnlargeShrink shouldEnlarge={shouldEnlarge}>
+				<Image style={styles.favImage} source={source} />
+			</EnlargeShrink>
+		);
 	};
 
 	const shareMovies = () => {
@@ -72,7 +79,7 @@ const MovieDetails = (props) => {
 								style={styles.favContainer}
 								onPress={() => toggleFavorite()}
 							>
-								<Image style={styles.favImage} source={displayFavImage()} />
+								{displayFavImage()}
 							</TouchableOpacity>
 							<Text style={styles.description}>{movie.overview}</Text>
 							<Text style={styles.otherTexts}>Released on {movie.release_date}</Text>
@@ -164,8 +171,9 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 	},
 	favImage: {
-		width: 40,
-		height: 40,
+		flex: 1,
+		width: null,
+		height: null,
 	},
 	shareTouchableFloatingActionView: {
 		position: "absolute",

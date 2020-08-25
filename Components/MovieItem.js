@@ -1,42 +1,43 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
+import FadeIn from "../Animations/FadeIn";
 import React from "react";
 import { getImgFromApi } from "../api/TMDBApi";
 
-const FavImage = require("../Images/ic_favorite.png");
-
-const MovieItem = ({ movie, displayMovieDetails, isFavorite }) => {
+const MovieItem = React.memo(({ movie, displayMovieDetails, isFavorite }) => {
 	return (
-		<TouchableOpacity
-			style={styles.mainContainer}
-			onPress={() => displayMovieDetails(movie.id)}
-		>
-			<Image style={styles.image} source={{ uri: getImgFromApi(movie.poster_path) }} />
-			<View style={styles.subContainer}>
-				<View style={styles.header}>
-					{isFavorite && (
-						<Image
-							style={styles.imgFav}
-							source={require("../Images/ic_favorite.png")}
-						/>
-					)}
-					<Text style={styles.titleText} numberOfLines={2}>
-						{movie.title}
-					</Text>
-					<Text style={styles.voteText}>{movie.vote_average}</Text>
+		<FadeIn>
+			<TouchableOpacity
+				style={styles.mainContainer}
+				onPress={() => displayMovieDetails(movie.id)}
+			>
+				<Image style={styles.image} source={{ uri: getImgFromApi(movie.poster_path) }} />
+				<View style={styles.subContainer}>
+					<View style={styles.header}>
+						{isFavorite && (
+							<Image
+								style={styles.imgFav}
+								source={require("../Images/ic_favorite.png")}
+							/>
+						)}
+						<Text style={styles.titleText} numberOfLines={2}>
+							{movie.title}
+						</Text>
+						<Text style={styles.voteText}>{movie.vote_average}</Text>
+					</View>
+					<View style={styles.descriptionContainer}>
+						<Text style={styles.description} numberOfLines={6}>
+							{movie.overview}
+						</Text>
+					</View>
+					<View style={styles.dateContainer}>
+						<Text style={styles.date}>Sorti le {movie.release_date}</Text>
+					</View>
 				</View>
-				<View style={styles.descriptionContainer}>
-					<Text style={styles.description} numberOfLines={6}>
-						{movie.overview}
-					</Text>
-				</View>
-				<View style={styles.dateContainer}>
-					<Text style={styles.date}>Sorti le {movie.release_date}</Text>
-				</View>
-			</View>
-		</TouchableOpacity>
+			</TouchableOpacity>
+		</FadeIn>
 	);
-};
+});
 
 const styles = StyleSheet.create({
 	mainContainer: {

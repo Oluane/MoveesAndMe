@@ -1,5 +1,5 @@
-import { ActivityIndicator, Button, FlatList, StyleSheet, TextInput, View } from "react-native";
-import React, { useEffect, useState } from "react";
+import { ActivityIndicator, Button, StyleSheet, TextInput, View } from "react-native";
+import React, { useCallback, useState } from "react";
 
 import MovieItem from "./MovieItem";
 import MoviesList from "./MoviesList";
@@ -9,54 +9,47 @@ import { useSelector } from "react-redux";
 const Search = (props) => {
 	const [movies, setMovies] = useState([]);
 	const [searchedText, setSearchedText] = useState("");
+	const [inputText, setInputText] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
 	const [page, setPage] = useState(0);
 	const [totalPages, setTotalPages] = useState(0);
 
-	useEffect(() => {
-		if (page === 0 && movies.length === 0 && totalPages === 0) {
-			loadMovies();
-		}
-	}, [page, movies, totalPages]);
-
-	const loadMovies = () => {
-		console.log("toto");
-		if (searchedText.length > 0) {
+	const loadMovies = useCallback((query, movies, page) => {
+		if (query.length > 0) {
 			setIsLoading(true);
-			console.log("tata");
-			getMoviesFromApiWithSearchedText(searchedText, page + 1).then((data) => {
+			getMoviesFromApiWithSearchedText(query, page + 1).then((data) => {
 				setPage(data.page);
 				setTotalPages(data.total_pages);
 				setMovies([...movies, ...data.results]);
 				setIsLoading(false);
 			});
 		}
-	};
+	}, []);
 
-	const displayMovieDetails = (movieId) => {
-		navigation.navigate("MovieDetails", { movieId: movieId });
+	const searchMovies = (query) => {
+		setSearchedText(query);
+		setPage(0);
+		setMovies([]);
+		setTotalPages(0);
+		loadMovies(query, [], 0);
 	};
 
 	return (
 		<View style={styles.mainContainer}>
 			<TextInput
 				placeholder="Titre du film"
-				value={searchedText}
+				value={inputText}
 				style={styles.textInput}
-				onChangeText={(e) => setSearchedText(e)}
-				onSubmitEditing={() => {
-					setPage(0);
-					setMovies([]);
-					setTotalPages(0);
+				onChangeText={(e) => setInputText(e)}
+				onSubmitEditing={(e) => {
+					searchMovies(inputText);
 				}}
 			/>
 			<Button
 				color={"crimson"}
 				title="Search"
 				onPress={() => {
-					setPage(0);
-					setMovies([]);
-					setTotalPages(0);
+					searchMovies(inputText);
 				}}
 			/>
 			<MoviesList
@@ -64,32 +57,10 @@ const Search = (props) => {
 				navigation={props.navigation}
 				page={page}
 				totalPages={totalPages}
-				loadMovies={loadMovies}
+				loadMovies={() => loadMovies(searchedText, movies, page)}
 				favoriteList={false}
 			/>
-			{/* <FlatList
-				data={movies}
-				keyExtractor={(item, idx) => idx.toString()}
-				renderItem={({ item }) => {
-					let isFavorite = false;
-					if (favMovies.findIndex((movie) => movie.id === item.id) !== -1) {
-						isFavorite = true;
-					}
-					return (
-						<MovieItem
-							movie={item}
-							displayMovieDetails={displayMovieDetails}
-							isFavorite={isFavorite}
-						/>
-					);
-				}}
-				onEndReachedThreshold={0.5}
-				onEndReached={() => {
-					if (page < totalPages) {
-						loadMovies();
-					}
-				}}
-			/> */}
+
 			{isLoading && (
 				<View style={styles.loadingContainer}>
 					<ActivityIndicator size="large" />
